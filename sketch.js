@@ -34,9 +34,9 @@ function setup(){
     enemy[i].sprite.hide();
   }
 
-  raiseStat("Attack", att, 1);
-  raiseStat("Defence", def, 4);
-  raiseStat("HP", hp, 2);
+  raiseStat("Attack", player.att, 1);
+  raiseStat("Defence", player.def, 4);
+  raiseStat("HP", player.hp, 2);
   // raiseAttack();
   // console.log("Attack = "+player.att);
   // raiseDefence();
@@ -58,7 +58,7 @@ function setup(){
 
   enemyNumber = 0;
   turnPrep(0);
-};
+}
 
  function preload(){
 //   // exclamation = loadImage("capture.PNG");
@@ -101,6 +101,7 @@ function Enemy(name, att, def, hp, luck, speed, spriteFile, songFile){
   this.sprite = createImg(spriteFile);
   this.sprite.position(686-this.sprite.width, 255-this.sprite.height);
   this.turnAnnounce = function(){
+    if (turnAnnounce == false);
     text(this._name+" Has appeared", 100, 100, 100, 100);
     turnAnnounced = true;
   }.bind(this)
@@ -112,8 +113,8 @@ function Enemy(name, att, def, hp, luck, speed, spriteFile, songFile){
     exclamation.show();
     enemyHitSound[enemyNumber].play();
     setTimeout(function(){exclamation.hide()}, this.speed);
-    timer = setTimeout(this.timer, this.speed);
     whatTime = "hit";
+    timer = setTimeout(this.timer, this.speed);
   }.bind(this)
 
   //Period in which a keypress will be considered late
@@ -123,16 +124,10 @@ function Enemy(name, att, def, hp, luck, speed, spriteFile, songFile){
     //enemyHitSound[enemyNumber].play();
     console.log(playerName +"'s hp = " + player.hp);
     if (this.hp > 0 && player.hp > 0){
-      setTimeout(turnPrep, 1000, enemyNumber);
+      restartTurn();
     }
     else if(player.hp <= 0){
-      background(0);
-      playerHealthBar.hide();
-      enemyHealthBar.hide();
-      slash.hide();
-      this.sprite.hide();
-      gameOver = true;
-      text("Game Over", windowWidth/2, windowHeight/2);
+      gameOver();
     }
     else if (this.hp <= 0){
       background(255);
@@ -151,7 +146,7 @@ function Enemy(name, att, def, hp, luck, speed, spriteFile, songFile){
       raiseSpeed();
       console.log("Speed = "+player.speed);
 
-      setTimeout(turnPrep, 1000, enemyNumber);
+      restartTurn();
     }
   }.bind(this)
 }
@@ -159,8 +154,9 @@ function Enemy(name, att, def, hp, luck, speed, spriteFile, songFile){
 function turnPrep(i){
   enemy[i].sprite.show();
   enemy[i].turnAnnounce();
-  if (enemy[i].hp > 0 && player.hp > 0){
-    turn = setTimeout(enemy[i].attackTurn, floor(random(4500))+2400);
+  whatTime = "Miss";
+  if (enemy[enemyNumber].hp > 0 && player.hp > 0){
+    turn = setTimeout(enemy[enemyNumber].attackTurn, floor(random(4500))+2400);
   }
   //Game Over
   // else if(player.hp <= 0 || strikes == 3){
@@ -193,11 +189,12 @@ function turnPrep(i){
   //
   //   setTimeout(turnPrep, 1000, enemyNumber);
   // }
-  whatTime = "Miss";
+  else{
+    console.log("something happened");
+  }
 }
 
 function keyPressed(){
-  background(random(255));
   slash = createImg("pictures/slash.png");
   slash.size(215, 175);
   slash.position(width/2-100, 173);
@@ -209,17 +206,10 @@ function keyPressed(){
     console.log("strikes = "+strikes);
     strikes++;
     if(strikes == 3){
-      gameOver = true;
-      playerHealthBar.hide();
-      enemyHealthBar.hide();
-      enemy[enemyNumber].sprite.hide();
-      slash.hide();
-      background(0);
-      text("Game Over", windowWidth/2, windowHeight/2);
-      end();
+      gameOver();
     }
     else{
-      setTimeout(turnPrep, 1000, enemyNumber)
+      restartTurn();
     }
   }
   else if (whatTime == "hit"){
@@ -229,7 +219,7 @@ function keyPressed(){
     enemy[enemyNumber].hp -= player.att - (player.att*enemy[enemyNumber].def/100);
     console.log(enemy[enemyNumber]._name+"'s hp = " + enemy[enemyNumber].hp);
     if (enemy[enemyNumber].hp > 0 && player.hp > 0){
-      setTimeout(turnPrep, 1000, enemyNumber);
+      restartTurn();
     }
     else if (enemy[enemyNumber].hp <= 0){
       background(255);
@@ -239,9 +229,9 @@ function keyPressed(){
       strikes = 0;
 
       player.statpoints+=5;
-      raiseStat("Attack", att, 1);
-      raiseStat("Defence", def, 4);
-      raiseStat("HP", hp, 2);
+      raiseStat("Attack", player.att, 1);
+      raiseStat("Defence", player.def, 4);
+      raiseStat("HP", player.hp, 2);
       // console.log("Attack = "+player.att);
       // raiseDefence();
       // console.log("Defence = "+player.def);
@@ -252,11 +242,26 @@ function keyPressed(){
       // console.log("HP = "+player.hp);
       // raiseSpeed();
       // console.log("Speed = "+player.speed);
-
-      setTimeout(turnPrep, 1000, enemyNumber);
+      turnAnnounced = false;
+      restartTurn();
     }
     whatTime = "Miss";
   }
+}
+
+function restartTurn(){
+  setTimeout(turnPrep, 1000, enemyNumber);
+}
+
+function gameOver(){
+  gameOver = true;
+  playerHealthBar.hide();
+  enemyHealthBar.hide();
+  enemy[enemyNumber].sprite.hide();
+  slash.hide();
+  background(0);
+  text("Game Over", windowWidth/2, windowHeight/2);
+  end();
 }
 
 //Stat Distribution
@@ -275,7 +280,7 @@ function keyPressed(){
 function raiseStat(name, stat, multiplier){
   able = false;
   while(able === false) {
-    var add= Number(prompt("How Many Points Do You Want To Add To "+ name +"  Current Defence = "+player.+stat, player.statPoints));
+    var add= Number(prompt("How Many Points Do You Want To Add To "+ name +"  Current Defence = "+stat, player.statPoints));
     if (add<=player.statPoints){
       able = true;
     }
@@ -320,6 +325,9 @@ function raiseStat(name, stat, multiplier){
 //TODO write console game intro
 
 function draw(){
+  healthBar();
+}
+function healthBar(){
   if (!gameOver){
     fill(255);
     rect(99, 49, 401, 51);
