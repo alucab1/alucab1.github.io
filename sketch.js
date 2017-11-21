@@ -1,5 +1,5 @@
 //global variables
-var player = {statPoints: 20, att: 10, def: 13, hp: 30, luck: 5, speed:10};
+var player = {statPoints: 20, att: 15, def: 13, hp: 30, luck: 5, speed:10};
 var playerName = prompt("Enter A Name", "Player");
 var exclamation;
 var startTurn;
@@ -25,10 +25,10 @@ var turnAnnounced = false;
 
 function setup(){
   createCanvas(windowWidth, windowHeight);
-  enemy[0] = new Enemy("enemy1", 7, 20, 40, 10, 600, "pictures/villager.png");
-  enemy[1] = new Enemy("enemy2", 9, 25, 45, 12, 500, "pictures/clipart.jpg");
-  enemy[2] = new Enemy("enemy3", 12, 30, 50, 14, 300, "pictures/weeb.jpeg");
-  enemy[3] = new Enemy("enemy4", 15, 35, 55, 15, 250, "pictures/waluigi.png");
+  enemy[0] = new Enemy("enemy1", 7, 20, 20, 10, 600, "pictures/angryvillagers.jpg");
+  enemy[1] = new Enemy("enemy2", 9, 25, 22, 12, 500, "pictures/clipart.jpg");
+  enemy[2] = new Enemy("enemy3", 12, 30, 25, 14, 300, "pictures/waluigi.png");
+  enemy[3] = new Enemy("enemy4", 15, 35, 27, 15, 250, "pictures/weeb.jpeg");
   enemy[4] = new Enemy("enemy4", 20, 50, 65, 17, 190, "pictures/guile.png");
   for (i = 0; i < enemy.length; i++){
     enemy[i].sprite.hide();
@@ -85,8 +85,8 @@ function setup(){
   slashSound = loadSound("sounds/slash.wav");
   enemyHitSound[0] = loadSound("sounds/villagernoise.mp3");
   enemyHitSound[1] = loadSound("sounds/Roblox Death Sound Effect.mp3");
-  enemyHitSound[2] = loadSound("sounds/Omae wa.mp3");
-  enemyHitSound[3] = loadSound("sounds/wah.mp3");
+  enemyHitSound[2] = loadSound("sounds/wah.mp3");
+  enemyHitSound[3] = loadSound("sounds/Omae wa.mp3");
   enemyHitSound[4] = loadSound("sounds/Sonic Boom.mp3");
 }
 //constructor
@@ -99,9 +99,9 @@ function Enemy(name, att, def, hp, luck, speed, spriteFile, songFile){
   this.luck = luck;
   this.speed = speed;
   this.sprite = createImg(spriteFile);
-  this.sprite.position(686-this.sprite.width, 255-this.sprite.height);
+  this.sprite.position(486-this.sprite.width, 255-this.sprite.height);
   this.turnAnnounce = function(){
-    if (turnAnnounce == false);
+    if (turnAnnounced == false);
     text(this._name+" Has appeared", 100, 100, 100, 100);
     turnAnnounced = true;
   }.bind(this)
@@ -127,7 +127,7 @@ function Enemy(name, att, def, hp, luck, speed, spriteFile, songFile){
       restartTurn();
     }
     else if(player.hp <= 0){
-      gameOver();
+      gameOverInitiate();
     }
     else if (this.hp <= 0){
       background(255);
@@ -203,10 +203,11 @@ function keyPressed(){
   if (whatTime == "Miss"){
     setTimeout(function(){slash.hide()}, 100);
     clearTimeout(turn);
+    clearTimeout(timer);
     console.log("strikes = "+strikes);
     strikes++;
     if(strikes == 3){
-      gameOver();
+      gameOverInitiate();
     }
     else{
       restartTurn();
@@ -228,10 +229,7 @@ function keyPressed(){
       enemyNumber++;
       strikes = 0;
 
-      player.statpoints+=5;
-      raiseStat("Attack", player.att, 1);
-      raiseStat("Defence", player.def, 4);
-      raiseStat("HP", player.hp, 2);
+      player.hp+=5;
       // console.log("Attack = "+player.att);
       // raiseDefence();
       // console.log("Defence = "+player.def);
@@ -253,17 +251,6 @@ function restartTurn(){
   setTimeout(turnPrep, 1000, enemyNumber);
 }
 
-function gameOver(){
-  gameOver = true;
-  playerHealthBar.hide();
-  enemyHealthBar.hide();
-  enemy[enemyNumber].sprite.hide();
-  slash.hide();
-  background(0);
-  text("Game Over", windowWidth/2, windowHeight/2);
-  end();
-}
-
 //Stat Distribution
 
 // function raiseAttack(){
@@ -280,7 +267,7 @@ function gameOver(){
 function raiseStat(name, stat, multiplier){
   able = false;
   while(able === false) {
-    var add= Number(prompt("How Many Points Do You Want To Add To "+ name +"  Current Defence = "+stat, player.statPoints));
+    var add= Number(prompt("How Many Points Do You Want To Add To "+ name +"  Current "+ name  +" = "+stat, player.statPoints));
     if (add<=player.statPoints){
       able = true;
     }
@@ -325,14 +312,41 @@ function raiseStat(name, stat, multiplier){
 //TODO write console game intro
 
 function draw(){
-  healthBar();
+  if (!gameOver){
+    healthBar();
+    strikeDraw();
+  }
+}
+
+function gameOverInitiate(){
+  gameOver = true;
+  playerHealthBar.hide();
+  enemyHealthBar.hide();
+  enemy[enemyNumber].sprite.hide();
+  slash.hide();
+  background(0);
+  text("Game Over", windowWidth/2, windowHeight/2);
+  end();
+}
+
+function strikeDraw(){
+  if (strikes>=1){
+    fill(255, 0, 0)
+    ellipse(50, 50, 40)
+  }
+  if (strikes>=2){
+    fill(255, 0, 0)
+    ellipse(50, 100, 40)
+  }
+  if (strikes>=3){
+    fill(255, 0, 0)
+    ellipse(50, 150, 40)
+  }
 }
 function healthBar(){
-  if (!gameOver){
     fill(255);
     rect(99, 49, 401, 51);
     rect(width-501, 49, 401, 51);
-  }
-  playerHealthBar.size(player.hp/maxPlayerHP*400, 50);
-  enemyHealthBar.size(enemy[enemyNumber].hp/enemy[enemyNumber].maxHP*400, 50);
+    playerHealthBar.size(player.hp/maxPlayerHP*400, 50);
+    enemyHealthBar.size(enemy[enemyNumber].hp/enemy[enemyNumber].maxHP*400, 50);
 }
