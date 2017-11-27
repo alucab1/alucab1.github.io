@@ -78,7 +78,7 @@ function Enemy(name, att, def, hp, speed, spriteFile, songFile){
 
   //Period in which if you press a key it will count as a hit
   this.attackTurn = function(){
-    exclamation = createImg("pictures/capture.PNG");
+    exclamation = createImg("pictures/Capture.PNG");
     exclamation.position(width/2-100, 25);
     exclamation.show();
     enemyHitSound[enemyNumber].play();
