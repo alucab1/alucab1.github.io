@@ -27,8 +27,8 @@ function setup(){
   enemy[0] = new Enemy("A mob of angry villagers", 7, 20, 20, 600, "pictures/angryvillagers.jpg");
   enemy[1] = new Enemy("An average badguy", 9, 30, 22, 500, "pictures/clipart.jpg");
   enemy[2] = new Enemy("Waluigi", 12, 40, 24, 300, "pictures/waluigi.png");
-  enemy[3] = new Enemy("A real ninja", 15, 50, 26, 250, "pictures/weeb.jpeg");
-  enemy[4] = new Enemy("Guile", 20, 50, 50, 190, "pictures/guile.png");
+  enemy[3] = new Enemy("A real ninja", 15, 50, 26, 260, "pictures/weeb.jpeg");
+  enemy[4] = new Enemy("Guile", 20, 50, 50, 230, "pictures/guile.png");
   for (i = 0; i < enemy.length; i++){
     enemy[i].sprite.hide();
   }
@@ -176,8 +176,13 @@ function hit(){
     if (player.hp>maxPlayerHP){
       maxPlayerHP = player.hp;
     }
-    turnAnnounced = false;
-    restartTurn();
+    if (enemyNumber >= 5){
+      youWin();
+    }
+    else{
+      turnAnnounced = false;
+      restartTurn();
+    }
   }
   whatTime = "Miss";
 }
@@ -201,7 +206,7 @@ function raiseStat(name, stat, multiplier){
     }
   }
   player.statPoints -= add;
-  player.def += add*multiplier;s
+  stat += add*multiplier;
 }
 
 //TODO write console game intro
@@ -224,6 +229,21 @@ function gameOverInitiate(){
   slash.hide();
   background(0);
   text("Game Over", windowWidth/2, windowHeight/2);
+  if (gameOver == true){
+    throw new Error();
+  }
+}
+function youWin(){
+  gameOver = true;
+  clearTimeout(newTurn);
+  clearTimeout(turn);
+  clearTimeout(timer);
+  playerHealthBar.hide();
+  enemyHealthBar.hide();
+  enemy[enemyNumber].sprite.hide();
+  slash.hide();
+  background(0, 0, 155);
+  text("you win", windowWidth/2, windowHeight/2);
   if (gameOver == true){
     throw new Error();
   }
