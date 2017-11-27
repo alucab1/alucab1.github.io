@@ -195,7 +195,7 @@ function restartTurn(){
 function raiseStat(name, stat, multiplier){
   able = false;
   while(able === false) {
-    var add = Number(prompt("How Many Points Do You Want To Add To "+ name +"  Current "+ name  +" = "+stat,"points left to add = "+ player.statPoints));
+    var add = Number(prompt("How Many Points Do You Want To Add To "+ name +"  Current "+ name  +" = "+stat,player.statPoints));
     if (add<=player.statPoints){
       able = true;
     }
