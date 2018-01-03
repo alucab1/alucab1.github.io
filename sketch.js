@@ -270,3 +270,4 @@ function healthBar(){
     playerHealthBar.size(player.hp/maxPlayerHP*400, 50);
     enemyHealthBar.size(enemy[enemyNumber].hp/enemy[enemyNumber].maxHP*400, 50);
 }
+//hi
