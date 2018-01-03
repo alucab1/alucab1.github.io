@@ -32,8 +32,10 @@ function draw() {
   var x = 0;
   var y = 0;
 
+  //how many frames makes up the canvas
   total = floor(width / w) * floor(height / h);
 
+  //loads the frames into all the screens for each frame
   frames[counter] = video.get();
   counter++;
   if (counter == total) {
@@ -52,6 +54,7 @@ function draw() {
   }
 }
 
+//refreshes the screen
 function clearScreen(){
   location.reload();
 }
